@@ -32,7 +32,6 @@ def run_scan_detection_thread():
     """Démarre la détection de scans dans un thread séparé"""
     def detection_task():
         while not stop_thread.is_set():  # Vérifie l'état de l'indicateur
-            # Filtre pour capturer tous les paquets TCP
             sniff(filter="tcp", prn=detect_scan, timeout=1)
         print("[INFO] Thread de détection SYN arrêté.")
     

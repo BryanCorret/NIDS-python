@@ -109,14 +109,12 @@ def gestion_alertes():
             # Affiche l'alerte sur la console
             print(f"{ROUGE}[ALERTE]{RESET} {alerte}")
 
-            # Enregistre l'alerte dans le fichier de log
             log_alert(alerte)  # Appelle la fonction pour loguer l'alerte
 
         except queue.Empty:
             pass  # Continue si aucune alerte n'est présente
 
 if __name__ == "__main__":
-    # Affichage de la bannière
     afficher_banniere()
 
     # Démarrer un thread pour gérer les alertes en temps réel
@@ -124,8 +122,6 @@ if __name__ == "__main__":
     thread_alertes.daemon = True  # S'assure que ce thread s'arrête à la fin du programme principal
     thread_alertes.start()
 
-    # Boucle principale pour afficher les menus et permettre la sélection des options
     choix()
 
-    # Attendre la fin de tous les threads avant de terminer
     thread_alertes.join()

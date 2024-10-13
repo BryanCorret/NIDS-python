@@ -3,13 +3,10 @@ import threading
 import time
 import queue
 
-# File d'alerte pour le partage entre threads
 alert_queue = queue.Queue()
 
-# Indicateur pour arrêter le thread de détection DoS
 stop_thread_dos = threading.Event()
 
-# Dictionnaire pour suivre le nombre de paquets envoyés par chaque IP
 ip_packet_count = {}
 THRESHOLD = 100  # Seuil pour déclencher une alerte (nombre de paquets par seconde)
 
