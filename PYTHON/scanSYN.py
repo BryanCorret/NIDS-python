@@ -23,11 +23,18 @@ def detect_scan(packet):
             alert_queue.put(f"[Null Scan] Détecté de {packet[IP].src}")
         
 
-def run_scan_detection_thread():
+def run_scan_detection_thread(ip):
     """Démarre la détection de scans dans un thread séparé"""
     def detection_task():
         while not stop_thread.is_set():  # Vérifie l'état de l'indicateur
-            sniff(filter="tcp", prn=detect_scan, timeout=1)
+
+            # Si aucune adresse IP n'est spécifiée, capturer tous les paquets
+            if ip:
+                filtre = f"tcp and host {ip}"
+                #print(f"ip : {ip}")
+            else:
+                filtre = "tcp"  # Capturer tous les paquets TCP
+            sniff(filter=filtre, prn=detect_scan, timeout=1)
             
 
         print("[INFO] Thread de détection SYN arrêté.")
