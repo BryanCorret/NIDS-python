@@ -33,6 +33,7 @@ def reset_packet_count():
         ip_packet_count.clear()
 
 def run_dos_detection_thread():
+    stop_thread_dos.clear()
     def detection_task():
         threading.Thread(target=reset_packet_count).start()
         while not stop_thread_dos.is_set():

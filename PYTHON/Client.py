@@ -2,6 +2,7 @@ import os
 import threading
 import queue
 import datetime
+import ipaddress
 from scanSYN import run_scan_detection_thread, stop_scan_detection_thread, alert_queue as syn_alert_queue
 from dos import run_dos_detection_thread, stop_dos_detection_thread, alert_queue as dos_alert_queue
 
@@ -45,10 +46,16 @@ def adresseip():
     print(f"o. Si vous voulez un scan d'une adresse IP spécifique ?")
     print(f"n. Si vous ne souhaitez pas d'adresse IP spécifique")
     bool_ip = input(f"\n{BOLD}Voulez-vous scan une adresse ip spécifique ? option (o, n)")
-        
+
     ip = None
-    if bool_ip=='o':
-        ip = input(f"\n{BOLD}Entrer l'adresse IP que vous souhaitez ?")
+    if bool_ip == 'o':
+        while True:
+            ip_input = input(f"\n{BOLD}Entrer l'adresse IP que vous souhaitez ?")
+            try:
+                ip = str(ipaddress.ip_address(ip_input))  # Valide et retourne une IP valide
+                break
+            except ValueError:
+                print(f"{ROUGE}Adresse IP invalide, veuillez entrer une adresse valide.{RESET}")
     return ip
 
 def choix():

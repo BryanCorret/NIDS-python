@@ -24,6 +24,7 @@ def detect_scan(packet):
         
 
 def run_scan_detection_thread(ip):
+    stop_thread.clear()
     """Démarre la détection de scans dans un thread séparé"""
     def detection_task():
         while not stop_thread.is_set():  # Vérifie l'état de l'indicateur
