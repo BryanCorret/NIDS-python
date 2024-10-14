@@ -67,7 +67,7 @@ def choix():
                 print(f"\nDétection DoS est maintenant {etat('dos', Dic_scan)}")
             else:
                 Dic_scan["dos"] = True
-                scan_dos_thread = run_dos_detection_thread(dos_alert_queue)  # Démarrer le thread de détection DoS
+                scan_dos_thread = run_dos_detection_thread()  # Démarrer le thread de détection DoS
                 print(f"\nDétection DoS est maintenant {etat('dos', Dic_scan)}")          
         
         elif option == '3':

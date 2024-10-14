@@ -8,7 +8,7 @@ alert_queue = queue.Queue()
 stop_thread_dos = threading.Event()
 
 ip_packet_count = {}
-THRESHOLD = 100  # Seuil pour déclencher une alerte (nombre de paquets par seconde)
+THRESHOLD = 10  # Seuil pour déclencher une alerte (nombre de paquets par seconde)
 
 def detect_dos(packet):
     """Fonction pour détecter une attaque DoS en se basant sur le nombre de paquets envoyés."""
@@ -29,24 +29,19 @@ def detect_dos(packet):
 def reset_packet_count():
     """Réinitialise le compteur de paquets toutes les secondes pour mesurer les paquets par seconde."""
     while not stop_thread_dos.is_set():
-        time.sleep(1)  # Attendre 1 seconde
+        time.sleep(1)  # Attendre 2 seconde
         ip_packet_count.clear()
 
 def run_dos_detection_thread():
-    """Démarre la détection DoS dans un thread séparé."""
     def detection_task():
-        # Thread pour remettre à zéro les compteurs de paquets toutes les secondes
         threading.Thread(target=reset_packet_count).start()
-
         while not stop_thread_dos.is_set():
-            sniff(filter="ip", prn=detect_dos, timeout=1)  # Timeout pour checker l'indicateur d'arrêt
-
-        print("[INFO] Thread de détection DoS arrêté.")
+            sniff(filter="ip", prn=detect_dos, timeout=1)
 
     thread = threading.Thread(target=detection_task)
     thread.start()
     return thread
-
+    
 def stop_dos_detection_thread():
     """Arrête le thread de détection DoS."""
     stop_thread_dos.set()
