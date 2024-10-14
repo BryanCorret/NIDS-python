@@ -2,8 +2,8 @@ import os
 import threading
 import queue
 import datetime
-from scanSYN import run_scan_detection_thread, stop_scan_detection_thread, alert_queue
-from dos import run_dos_detection_thread, stop_dos_detection_thread, alert_queue
+from scanSYN import run_scan_detection_thread, stop_scan_detection_thread, alert_queue as syn_alert_queue
+from dos import run_dos_detection_thread, stop_dos_detection_thread, alert_queue as dos_alert_queue
 
 VIOLET = '\033[95m'
 VERT = '\033[92m'
@@ -13,7 +13,6 @@ ROUGE = '\033[91m'
 RESET = '\033[0m'
 BOLD = '\033[1m'
 
-# Dictionnaire pour stocker l'état des scans
 Dic_scan = {"syn": False, "dos": False}
 scan_syn_thread = None  
 scan_dos_thread = None 
@@ -68,7 +67,7 @@ def choix():
                 print(f"\nDétection DoS est maintenant {etat('dos', Dic_scan)}")
             else:
                 Dic_scan["dos"] = True
-                scan_dos_thread = run_dos_detection_thread()  # Démarrer le thread de détection DoS
+                scan_dos_thread = run_dos_detection_thread(dos_alert_queue)  # Démarrer le thread de détection DoS
                 print(f"\nDétection DoS est maintenant {etat('dos', Dic_scan)}")          
         
         elif option == '3':
@@ -81,38 +80,44 @@ def choix():
                 scan_dos_thread.join()
             break
         else:
-            print(f"{WARNING}Option invalide, veuillez choisir 1, 2, 3 ou 4.{RESET}")
+            print(f"{WARNING}Option invalide, veuillez choisir 1, 2, ou 3.{RESET}")
 
 def log_alert(alert_message):
     """Écrit un message d'alerte dans un fichier de log avec la date et l'heure."""
-    log_directory = "../logs"
+    log_directory = "./logs"
+    
+    # Vérifie si le dossier de logs existe, sinon il le crée
     if not os.path.exists(log_directory):
-        os.makedirs(log_directory)  # Crée le dossier s'il n'existe pas
+        os.makedirs(log_directory)
 
-    current_time = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    current_time = datetime.datetime.now().strftime("%Y-%m-%d_%H")
     log_file_name = os.path.join(log_directory, f"LOG_{current_time}.txt")
 
+    print(f"Fichier de log : {log_file_name}") 
     log_entry = f"{alert_message} | [{current_time}]\n"
-
     with open(log_file_name, "a") as log_file:
         log_file.write(log_entry)
 
 def gestion_alertes():
     """Gère les alertes en temps réel."""
-    print('alerte ok')
+    print("Gestion des alertes activée.")
     while True:
         try:
-            alerte = alert_queue.get(timeout=1)  # Récupère l'alerte avec un timeout d'une seconde
-            print(alerte)
-            print(alert_queue)
-            
-            # Affiche l'alerte sur la console
-            print(f"{ROUGE}[ALERTE]{RESET} {alerte}")
+            alerte_syn = syn_alert_queue.get(timeout=1)  # Récupère les alertes de scan SYN
+            print(f"{ROUGE}[ALERTE SYN]{RESET} {alerte_syn}")
+            log_alert(alerte_syn)
+            syn_alert_queue.task_done()
+        except queue.Empty:
+            pass
 
-            log_alert(alerte)  # Appelle la fonction pour loguer l'alerte
+        try:
+            alerte_dos = dos_alert_queue.get(timeout=1)  # Récupère les alertes DoS
+            print(f"{ROUGE}[ALERTE DOS]{RESET} {alerte_dos}")
+            log_alert(alerte_dos)
+            dos_alert_queue.task_done()
 
         except queue.Empty:
-            pass  # Continue si aucune alerte n'est présente
+            pass
 
 if __name__ == "__main__":
     afficher_banniere()
