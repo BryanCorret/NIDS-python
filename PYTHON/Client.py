@@ -109,11 +109,11 @@ def log_alert(alert_message):
     if not os.path.exists(log_directory):
         os.makedirs(log_directory)
 
-    current_time = datetime.datetime.now().strftime("%Y-%m-%d_%H")
-    log_file_name = os.path.join(log_directory, f"LOG_{current_time}.txt")
+    current_datetime = datetime.datetime.now()
+    log_file_name = os.path.join(log_directory, f"LOG_{current_datetime.strftime('%Y-%m-%d')}.txt")
 
     print(f"Fichier de log : {log_file_name}") 
-    log_entry = f"{alert_message} | [{current_time}]\n"
+    log_entry = f"{alert_message} | [{current_datetime.strftime('%d-%m-%Y %H:%M:%S')}]\n"
     with open(log_file_name, "a") as log_file:
         log_file.write(log_entry)
 

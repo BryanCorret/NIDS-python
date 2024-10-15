@@ -1,4 +1,4 @@
-from scapy.all import sniff, TCP, IP, UDP
+from scapy.all import sniff, TCP, IP, ICMP
 import threading
 import queue
 
@@ -9,19 +9,27 @@ alert_queue = queue.Queue()
 stop_thread = threading.Event()
 def detect_scan(packet):
     """Fonction pour détecter les différents types de scans Nmap."""
+
     if IP in packet : 
         # SYN Scan
         if TCP in packet and packet[TCP].flags == 'S':
             alert_queue.put(f"[SYN Scan] Détecté de {packet[IP].src} ")
-        
-        # FIN Scan
-        elif TCP in packet and packet[TCP].flags == 'F':
-            alert_queue.put(f"[FIN Scan] Détecté de {packet[IP].src}")
-        
+            print(f"[SYN Scan] Détecté de {packet[IP].src} ")
         # Null Scan
         elif TCP in packet and packet[TCP].flags == 0:
             alert_queue.put(f"[Null Scan] Détecté de {packet[IP].src}")
+            print(f"[Null Scan] Détecté de {packet[IP].src}")
+
+        elif TCP in packet and packet[TCP].flags == 'FPU':  # Drapeaux FIN, PSH, URG
+            src_ip = packet[IP].src
+            alert_queue.put(f"[Xmas Scan] Détecté de {packet[IP].src}")
+            print(f"Scan XMAS détecté de {src_ip}")
         
+        elif ICMP in packet:
+            src_ip = packet[IP].src
+            alert_queue.put(f"[ICMP Scan] Détecté de {packet[IP].src}")
+            print(f"Scan ICMP détecté de {src_ip}")
+
 
 def run_scan_detection_thread(ip):
     stop_thread.clear()

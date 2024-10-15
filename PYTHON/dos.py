@@ -6,6 +6,7 @@ import queue
 alert_queue = queue.Queue()
 stop_thread_dos = threading.Event()
 ip_packet_count = {}
+
 Seuil = 10  # Seuil pour déclencher une alerte (nombre de paquets par seconde)
 
 def detect_dos(packet):
