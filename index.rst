@@ -8,6 +8,8 @@ Sommaire :
    :caption: Contents:
 
    DOC/Client
+   DOC/Scan
+   DOC/Dos
 
 Indices et tables
 =================
