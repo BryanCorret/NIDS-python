@@ -2,6 +2,7 @@ import os
 import threading
 import queue
 import datetime
+import ipaddress
 from scanSYN import run_scan_detection_thread, stop_scan_detection_thread, alert_queue as syn_alert_queue
 from dos import run_dos_detection_thread, stop_dos_detection_thread, alert_queue as dos_alert_queue
 
@@ -27,10 +28,10 @@ def etat(type_scan, dic_scan=Dic_scan):
 def afficher_banniere():
     """Affiche la bannière du tool"""
     print(f"{BOLD}{VIOLET}**************************************************************************{RESET}")
-    print(f"{BLEU}      __  __ __        __              _______ _______ _____  _______ ")
-    print("     |  |/  |__|.----.|__|   ______   |    |  |_     _|     \\|     __| ")
-    print("     |     <|  ||   _||  |  |______|  |       |_|   |_|  --  |__     |")
-    print("     |__|\\__|__||__|  |__|            |__|____|_______|_____/|_______|")
+    print(f"{BLEU}       ____  ___  __   __     __  ___ __   __  ______")
+    print("      |    ||   ||  \  | |   |  ||   || | | | |    _ |")
+    print("      | ___||   ||    \| | __|  ||   || |_| | |  |  _|")
+    print("      |____||___||__||___||_____||___||_____| |__|\_|    ")
     print(f"{VIOLET}**************************************************************************{RESET}")
 
 def menu():
@@ -40,14 +41,31 @@ def menu():
     print(f"2. Detection Dos : {etat('dos')}")
     print(f"3. Quitter")
 
+def adresseip():
+    """Affiche le menu d'une nouvelle adresse IP"""
+    print(f"o. Si vous voulez un scan d'une adresse IP spécifique ?")
+    print(f"n. Si vous ne souhaitez pas d'adresse IP spécifique")
+    bool_ip = input(f"\n{BOLD}Voulez-vous scan une adresse ip spécifique ? option (o, n)")
+
+    ip = None
+    if bool_ip == 'o':
+        while True:
+            ip_input = input(f"\n{BOLD}Entrer l'adresse IP que vous souhaitez ?")
+            try:
+                ip = str(ipaddress.ip_address(ip_input))  # Valide et retourne une IP valide
+                break
+            except ValueError:
+                print(f"{ROUGE}Adresse IP invalide, veuillez entrer une adresse valide.{RESET}")
+    return ip
+
 def choix():
     """Permet à l'utilisateur de choisir et activer/désactiver les détections"""
     global scan_syn_thread, scan_dos_thread
     
     while True:
         menu()
-        option = input(f"\n{BOLD}Choisissez une option (1-3) : {RESET}")
-        
+        option = input(f"\n{BOLD}Choisissez une option (1-3) : {RESET}")        
+
         if option == '1':
             if Dic_scan["syn"]:
                 Dic_scan["syn"] = False
@@ -56,7 +74,8 @@ def choix():
                 print(f"\nSYN scan est maintenant {etat('syn', Dic_scan)}")
             else:
                 Dic_scan["syn"] = True
-                scan_syn_thread = run_scan_detection_thread()  # Démarrer le thread de détection SYN
+                ip = adresseip()
+                scan_syn_thread = run_scan_detection_thread(ip)  # Démarrer le thread de détection SYN
                 print(f"\nSYN scan est maintenant {etat('syn', Dic_scan)}")
         
         elif option == '2':
@@ -130,3 +149,4 @@ if __name__ == "__main__":
     choix()
 
     thread_alertes.join()
+# arp spoofing
