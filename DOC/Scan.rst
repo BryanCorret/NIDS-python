@@ -4,14 +4,7 @@ Module de détection Scan
 
 Ce module est utilisé pour détecter divers types de scans réseau, tels que les scans SYN, Null, Xmas, et ICMP. Ces types de scans sont souvent utilisés par les attaquants pour explorer des services ouverts sur des machines cibles.
 
-Fonctions
-=========
-
-.. automodule:: ScanSYN
-   :members:
-   :undoc-members:
-   :show-inheritance:
-.. currentmodule:: scanSYN
+.. currentmodule:: Scan
 
 
 Explication des fonctions

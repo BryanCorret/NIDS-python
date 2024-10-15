@@ -1,5 +1,6 @@
-Client Module Documentation
+Client Documentation
 ============================
 
 .. automodule:: Client
    :members:
+.. currentmodule:: Client
