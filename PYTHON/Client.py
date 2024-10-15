@@ -3,8 +3,8 @@ import threading
 import queue
 import datetime
 import ipaddress
-from scanSYN import run_scan_detection_thread, stop_scan_detection_thread, alert_queue as syn_alert_queue
-from dos import run_dos_detection_thread, stop_dos_detection_thread, alert_queue as dos_alert_queue
+from Scan import run_scan_detection_thread, stop_scan_detection_thread, alert_queue as syn_alert_queue
+from Dos import run_dos_detection_thread, stop_dos_detection_thread, alert_queue as dos_alert_queue
 
 VIOLET = '\033[95m'
 VERT = '\033[92m'
@@ -19,7 +19,15 @@ scan_syn_thread = None
 scan_dos_thread = None 
 
 def etat(type_scan, dic_scan=Dic_scan):
-    """Renvoie l'état d'un scan avec une couleur indiquant s'il est actif ou inactif"""
+    """Renvoie l'état d'un scan avec une couleur indiquant s'il est actif ou inactif
+
+    Args:
+        type_scan (string): Nom de la protection
+        dic_scan (Dict): Dictionaire contenant l'état des dictionnaires.
+
+    Returns:
+        Bool: True si la protection est active sinon False
+    """
     if dic_scan.get(type_scan, False):
         return f"{BOLD}{VERT}actif{RESET}"
     else:
@@ -42,15 +50,19 @@ def menu():
     print(f"3. Quitter")
 
 def adresseip():
-    """Affiche le menu d'une nouvelle adresse IP"""
+    """affiche le menu d'une nouvelle adresse IP
+
+    Returns:
+        String: Retourne l'ip de l'utilisateur
+    """
     print(f"o. Si vous voulez un scan d'une adresse IP spécifique ?")
     print(f"n. Si vous ne souhaitez pas d'adresse IP spécifique")
-    bool_ip = input(f"\n{BOLD}Voulez-vous scan une adresse ip spécifique ? option (o, n)")
+    bool_ip = input(f"\n{BOLD}Voulez-vous scan une adresse ip spécifique ? option (o, n) : ")
 
     ip = None
     if bool_ip == 'o':
         while True:
-            ip_input = input(f"\n{BOLD}Entrer l'adresse IP que vous souhaitez ?")
+            ip_input = input(f"\n{BOLD}Entrer l'adresse IP que vous souhaitez : ")
             try:
                 ip = str(ipaddress.ip_address(ip_input))  # Valide et retourne une IP valide
                 break
@@ -102,9 +114,13 @@ def choix():
             print(f"{WARNING}Option invalide, veuillez choisir 1, 2, ou 3.{RESET}")
 
 def log_alert(alert_message):
-    """Écrit un message d'alerte dans un fichier de log avec la date et l'heure."""
+    """"Écrit un message d'alerte dans un fichier de log avec la date et l'heure.
+
+    Args:
+        alert_message (String): Un arlerte remonter par les Threads
+    """
     log_directory = "./logs"
-    
+    print(type(alert_message))
     # Vérifie si le dossier de logs existe, sinon il le crée
     if not os.path.exists(log_directory):
         os.makedirs(log_directory)
@@ -119,11 +135,11 @@ def log_alert(alert_message):
 
 def gestion_alertes():
     """Gère les alertes en temps réel."""
-    print("Gestion des alertes activée.")
+    print("Gestion des alertes activéFPUe.")
     while True:
         try:
             alerte_syn = syn_alert_queue.get(timeout=1)  # Récupère les alertes de scan SYN
-            print(f"{ROUGE}[ALERTE SYN]{RESET} {alerte_syn}")
+            print(f"{ROUGE}[ALERTE SCAN]{RESET} {alerte_syn}")
             log_alert(alerte_syn)
             syn_alert_queue.task_done()
         except queue.Empty:
