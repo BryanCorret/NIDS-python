@@ -25,3 +25,12 @@ Le but de ce projet est de développer un système de détection d'intrusion ré
    cd nids
    pip install requirment.txt
    ```
+## Lancement des scripts
+1. **Lancer le projet**
+* Il faut lancer Client.py
+
+2. **Lancer l'environnement de test**
+* Se trouver dans le répertoire NIDS-python
+```bash
+python -m unittest discover -s PYTHON/Test
+```
