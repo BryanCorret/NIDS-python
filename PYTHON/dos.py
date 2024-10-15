@@ -8,8 +8,7 @@ alert_queue = queue.Queue()
 stop_thread_dos = threading.Event()
 
 ip_packet_count = {}
-THRESHOLD = 10  # Seuil pour déclencher une alerte (nombre de paquets par seconde)
-
+THRESHOLD = 10  # Seuil dectection DoS
 def detect_dos(packet):
     """Fonction pour détecter une attaque DoS en se basant sur le nombre de paquets envoyés."""
     if IP in packet:
