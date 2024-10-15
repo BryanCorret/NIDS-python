@@ -7,10 +7,15 @@ alert_queue = queue.Queue()
 stop_thread_dos = threading.Event()
 ip_packet_count = {}
 
-Seuil = 10  # Seuil pour déclencher une alerte (nombre de paquets par seconde)
+SEUIL = 10  # Seuil pour déclencher une alerte (nombre de paquets par seconde)
 
 def detect_dos(packet):
-    """Fonction pour détecter une attaque DoS en se basant sur le nombre de paquets envoyés."""
+    """Fonction pour détecter une attaque DoS en se basant sur le nombre de paquets envoyés.
+    Args:
+        packet (scapy.Packet): Le paquet réseau capturé par Scapy.
+
+    Alerte :
+        Si une IP dépasse le seuil défini de paquets par seconde, une alerte est générée et placée dans alert_queue."""
     if IP in packet:
         ip_src = packet[IP].src
 
@@ -21,7 +26,7 @@ def detect_dos(packet):
             ip_packet_count[ip_src] = 1
 
         # Si une IP dépasse le seuil de paquets
-        if ip_packet_count[ip_src] > Seuil:
+        if ip_packet_count[ip_src] > SEUIL:
             alerte = f"[ALERTE DoS] IP suspectée : {ip_src} avec {ip_packet_count[ip_src]} paquets."
             alert_queue.put(alerte)
 
@@ -32,6 +37,14 @@ def reset_packet_count():
         ip_packet_count.clear()
 
 def run_dos_detection_thread():
+    """
+    Lance le thread de détection d'attaque DoS.
+
+    Ce thread capture les paquets IP et applique la détection DoS en temps réel.
+
+    Returns:
+        threading.Thread: Le thread qui effectue la détection DoS.
+    """
     stop_thread_dos.clear()
     def detection_task():
         threading.Thread(target=reset_packet_count).start()

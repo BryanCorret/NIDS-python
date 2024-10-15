@@ -13,18 +13,18 @@ def detect_scan(packet):
     if IP in packet : 
         # SYN Scan
         if TCP in packet and packet[TCP].flags == 'S':
-            alert_queue.put(f"[SYN Scan] Détecté de {packet[IP].src} ")
-            print(f"[SYN Scan] Détecté de {packet[IP].src} ")
+            alert_queue.put(f"[SYN Scan] Détecté de {packet[IP].src}")
+            print(f"[SYN Scan] Détecté de {packet[IP].src}")
         # Null Scan
         elif TCP in packet and packet[TCP].flags == 0:
             alert_queue.put(f"[Null Scan] Détecté de {packet[IP].src}")
             print(f"[Null Scan] Détecté de {packet[IP].src}")
-
+        #Xmas
         elif TCP in packet and packet[TCP].flags == 'FPU':  # Drapeaux FIN, PSH, URG
             src_ip = packet[IP].src
             alert_queue.put(f"[Xmas Scan] Détecté de {packet[IP].src}")
             print(f"Scan XMAS détecté de {src_ip}")
-        
+        # ICMP
         elif ICMP in packet:
             src_ip = packet[IP].src
             alert_queue.put(f"[ICMP Scan] Détecté de {packet[IP].src}")

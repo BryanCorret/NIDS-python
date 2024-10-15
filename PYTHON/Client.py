@@ -3,8 +3,9 @@ import threading
 import queue
 import datetime
 import ipaddress
-from Scan import run_scan_detection_thread, stop_scan_detection_thread, alert_queue as syn_alert_queue
+from Scan import run_scan_detection_thread, stop_scan_detection_thread, alert_queue as scan_alert_queue
 from Dos import run_dos_detection_thread, stop_dos_detection_thread, alert_queue as dos_alert_queue
+
 
 VIOLET = '\033[95m'
 VERT = '\033[92m'
@@ -138,10 +139,10 @@ def gestion_alertes():
     print("Gestion des alertes activéFPUe.")
     while True:
         try:
-            alerte_syn = syn_alert_queue.get(timeout=1)  # Récupère les alertes de scan SYN
-            print(f"{ROUGE}[ALERTE SCAN]{RESET} {alerte_syn}")
-            log_alert(alerte_syn)
-            syn_alert_queue.task_done()
+            alerte_scan = scan_alert_queue.get(timeout=1)  # Récupère les alertes de scan
+            print(f"{ROUGE}[ALERTE]{RESET} {alerte_scan}")
+            log_alert(alerte_scan)
+            scan_alert_queue.task_done()
         except queue.Empty:
             pass
 
