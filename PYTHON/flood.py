@@ -8,7 +8,6 @@ port = 80
 syn_packet = IP(dst=ip)/TCP(dport=port, flags='FPU')
 send(syn_packet)
 
-print(datetime.datetime.today())
 
 '''
 from scapy.all import IP, TCP, send
