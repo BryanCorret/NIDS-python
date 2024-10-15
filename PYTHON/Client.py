@@ -150,3 +150,6 @@ if __name__ == "__main__":
 
     thread_alertes.join()
 # arp spoofing
+# Injection SQL
+# XSS
+# Bruit de force serveur ssh
