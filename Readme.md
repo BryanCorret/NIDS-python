@@ -23,5 +23,10 @@ Le but de ce projet est de développer un système de détection d'intrusion ré
    ```bash
    git clone https://github.com/BryanCorret/NIDS.git
    cd nids
-   pip install requirment.txt
    ```
+2. **Installer les depandances**
+
+   ```bash
+   pip install DOC/requirment.txt
+   ```
+   
