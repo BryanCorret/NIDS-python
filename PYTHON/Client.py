@@ -58,12 +58,12 @@ def adresseip():
     """
     print(f"o. Si vous voulez un scan d'une adresse IP spécifique ?")
     print(f"n. Si vous ne souhaitez pas d'adresse IP spécifique")
-    bool_ip = input(f"\n{BOLD}Voulez-vous scan une adresse ip spécifique ? option (o, n) : ")
+    bool_ip = input(f"\n{BOLD}Voulez-vous scan une adresse ip spécifique ? option (o, n) : {RESET}")
 
     ip = None
     if bool_ip == 'o':
         while True:
-            ip_input = input(f"\n{BOLD}Entrer l'adresse IP que vous souhaitez : ")
+            ip_input = input(f"\n{BOLD}Entrer l'adresse IP que vous souhaitez : {RESET}")
             try:
                 ip = str(ipaddress.ip_address(ip_input))  # Valide et retourne une IP valide
                 break
@@ -87,8 +87,9 @@ def choix():
                 print(f"\nSYN scan est maintenant {etat('syn', Dic_scan)}")
             else:
                 Dic_scan["syn"] = True
-                ip = adresseip()
-                scan_syn_thread = run_scan_detection_thread(ip)  # Démarrer le thread de détection SYN
+                """ip = adresseip()
+                print(ip)"""
+                scan_syn_thread = run_scan_detection_thread()  # Démarrer le thread de détection SYN
                 print(f"\nSYN scan est maintenant {etat('syn', Dic_scan)}")
         
         elif option == '2':
