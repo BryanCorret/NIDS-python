@@ -2,11 +2,9 @@ from scapy.all import sniff, TCP, IP, ICMP,conf
 import threading
 import queue
 
-# File d'alerte pour le partage entre threads
 alert_queue = queue.Queue()
 conf.promisc = True
 
-# Indicateur pour arrêter le thread de détection
 stop_thread = threading.Event()
 def detect_scan(packet):
     """Fonction pour détecter les différents types de scans Nmap."""
@@ -43,7 +41,7 @@ def run_scan_detection_thread(interface):
 
         print("[INFO] Thread de détection SYN arrêté.")
     
-    thread = threading.Thread(target=detection_task)
+    thread = threading.Thread(target=detection_task) # le thread s'occupe éxécute uniquement la tâche de la detection_task
     thread.start()
     return thread
 
