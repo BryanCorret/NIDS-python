@@ -4,10 +4,11 @@ import queue
 import datetime
 from Scan import run_scan_detection_thread, stop_scan_detection_thread, alert_queue as scan_alert_queue
 from Dos import run_dos_detection_thread, stop_dos_detection_thread, alert_queue as dos_alert_queue
+from Bruteforce_ssh import run_ssh_bruteforce_thread, stop_ssh_bruteforce_thread, alert_queue as ssh_alert_queue
 from utils import *
 
 
-scan_dos_thread,scan_syn_thread = None,None
+scan_dos_thread, scan_syn_thread, ssh_thread = None, None, None
 
 def choix_interface():
     """Permet à l'utilisateur de choisir son interface
@@ -59,9 +60,20 @@ def choix():
                 Dic_scan["dos"] = True
                 scan_dos_thread = run_dos_detection_thread(interface)  # Démarrer le thread de détection DoS
                 print(type(scan_dos_thread))
-                print(f"\nDétection DoS est maintenant {etat('dos', Dic_scan)}")          
-        
+                print(f"\nDétection DoS est maintenant {etat('dos', Dic_scan)}")    
+                      
         elif option == '3':
+            if Dic_scan["ssh"]:
+                Dic_scan["ssh"] = False
+                stop_ssh_bruteforce_thread()  # Arrêter le thread de détection SSH
+                ssh_thread.join()  # Attendre que le thread s'arrête
+                print(f"\nDétection brute-force SSH est maintenant {etat('ssh', Dic_scan)}")
+            else:
+                Dic_scan["ssh"] = True
+                ssh_thread = run_ssh_bruteforce_thread(interface)  # Démarrer le thread de détection SSH
+                print(f"\nDétection brute-force SSH est maintenant {etat('ssh', Dic_scan)}")
+
+        elif option == '4':
             print(f"Quitter le programme")
             if Dic_scan["syn"]:
                 stop_scan_detection_thread()
@@ -96,7 +108,7 @@ def log_alert(alert_message):
 def gestion_alertes():
     """Gère les alertes"""
     while True:
-        try:
+        try: # accès alert_scan
             alerte_scan = scan_alert_queue.get_nowait()  
             print(f"{ROUGE}[ALERTE]{RESET} {alerte_scan}")
             log_alert(alerte_scan)
@@ -107,19 +119,26 @@ def gestion_alertes():
             log_alert(alerte_dos)
             dos_alert_queue.task_done()
 
-        except queue.Empty:
-            pass  #
+        except queue.Empty: # si vide passer l'erreur
+            pass 
 
-        try:
+        try: # accès alert_scan
             alerte_dos = dos_alert_queue.get_nowait() 
             print(f"{ROUGE}[ALERTE DOS]{RESET} {alerte_dos}")
             log_alert(alerte_dos)
             dos_alert_queue.task_done()
 
-        except queue.Empty:
+        except queue.Empty: # si vide passer l'erreur
             pass  
 
+        try: # accès alert_scan
+            alerte_ssh = ssh_alert_queue.get_nowait()
+            print(f"{ROUGE}[ALERTE SSH]{RESET} {alerte_ssh}")  
+            log_alert(alerte_ssh)            
+            ssh_alert_queue.task_done()       
 
+        except queue.Empty:  # si vide passer l'erreur       
+            pass
 
 if __name__ == "__main__":
     interface = choix_interface()
@@ -134,5 +153,3 @@ if __name__ == "__main__":
     choix()
 
     thread_alertes.join()
-
-# Bruit de force serveur ssh

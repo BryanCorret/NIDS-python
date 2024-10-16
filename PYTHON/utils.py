@@ -1,6 +1,6 @@
 import ipaddress
 
-Dic_scan = {"syn": False, "dos": False}
+Dic_scan = {"syn": False, "dos": False, "ssh": False}
 def etat(type_scan, dic_scan=Dic_scan):
     """Renvoie l'état d'un scan avec une couleur indiquant s'il est actif ou inactif
 
@@ -41,7 +41,8 @@ def menu():
     print(f"\nMenu de détections : ")
     print(f"1. Detection SYN : {etat('syn')}")
     print(f"2. Detection Dos : {etat('dos')}")
-    print(f"3. Quitter")
+    print(f"3. Detection Bruteforce SSh : {etat('ssh')}")
+    print(f"4. Quitter")
 
 def adresseip():
     """affiche le menu d'une nouvelle adresse IP
