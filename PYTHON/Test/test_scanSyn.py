@@ -1,7 +1,7 @@
 import unittest
 from scapy.all import IP, TCP
-from PYTHON.Scan import detect_scan
-from PYTHON.Scan import alert_queue
+from ..Scan import detect_scan
+from ..Scan import alert_queue
 
 class TestScanDetection(unittest.TestCase):
 
