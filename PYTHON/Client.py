@@ -110,6 +110,16 @@ def gestion_alertes():
         except queue.Empty:
             pass  #
 
+        try:
+            alerte_dos = dos_alert_queue.get_nowait() 
+            print(f"{ROUGE}[ALERTE DOS]{RESET} {alerte_dos}")
+            log_alert(alerte_dos)
+            dos_alert_queue.task_done()
+
+        except queue.Empty:
+            pass  
+
+
 
 if __name__ == "__main__":
     interface = choix_interface()
