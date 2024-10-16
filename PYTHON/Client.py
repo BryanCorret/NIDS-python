@@ -7,8 +7,7 @@ from Dos import run_dos_detection_thread, stop_dos_detection_thread, alert_queue
 from utils import *
 
 
-scan_syn_thread = None  
-scan_dos_thread = None 
+scan_dos_thread,scan_syn_thread = None,None
 
 def choix_interface():
     """Permet à l'utilisateur de choisir son interface
@@ -30,7 +29,7 @@ def choix_interface():
     return interface
 
 def choix():
-    """Permet à l'utilisateur de choisir et activer/désactiver les détections"""
+    """Permet à l'utilisateur de choisir et activer ou de désactiver les détections"""
     global scan_syn_thread, scan_dos_thread
     
     while True:
@@ -53,12 +52,13 @@ def choix():
         elif option == '2':
             if Dic_scan["dos"]:
                 Dic_scan["dos"] = False
-                stop_dos_detection_thread()  # Arrêter le thread de détection DoS
-                scan_dos_thread.join()  # Attendre que le thread s'arrête
+                stop_dos_detection_thread()  # Arrêter le thread de detection DoS
+                scan_dos_thread.join()  # Attendre que le thread s'arrete
                 print(f"\nDétection DoS est maintenant {etat('dos', Dic_scan)}")
             else:
                 Dic_scan["dos"] = True
                 scan_dos_thread = run_dos_detection_thread(interface)  # Démarrer le thread de détection DoS
+                print(type(scan_dos_thread))
                 print(f"\nDétection DoS est maintenant {etat('dos', Dic_scan)}")          
         
         elif option == '3':
@@ -80,8 +80,8 @@ def log_alert(alert_message):
         alert_message (String): Un arlerte remonter par les Threads
     """
     log_directory = "./logs"
-    #   print(type(alert_message))
-    # Vérifie si le dossier de logs existe, sinon il le crée
+
+    #  si le dossier existe sinon il le crée
     if not os.path.exists(log_directory):
         os.makedirs(log_directory)
 
@@ -94,39 +94,35 @@ def log_alert(alert_message):
         log_file.write(log_entry)
 
 def gestion_alertes():
-    """Gère les alertes en temps réel."""
+    """Gère les alertes"""
     while True:
-        # Utilise une approche non-bloquante
         try:
-            alerte_scan = scan_alert_queue.get_nowait()  # Récupère les alertes de scan sans attendre
+            alerte_scan = scan_alert_queue.get_nowait()  
             print(f"{ROUGE}[ALERTE]{RESET} {alerte_scan}")
             log_alert(alerte_scan)
             scan_alert_queue.task_done()
-        except queue.Empty:
-            pass  # Ignore l'exception si la file est vide
 
-        try:
-            alerte_dos = dos_alert_queue.get_nowait()  # Récupère les alertes DoS sans attendre
+            alerte_dos = dos_alert_queue.get_nowait() 
             print(f"{ROUGE}[ALERTE DOS]{RESET} {alerte_dos}")
             log_alert(alerte_dos)
             dos_alert_queue.task_done()
+
         except queue.Empty:
-            pass  # Ignore l'exception si la file est vide
+            pass  #
+
 
 if __name__ == "__main__":
     interface = choix_interface()
 
     afficher_banniere()
 
-    # Démarrer un thread pour gérer les alertes en temps réel
+    # Démarrer un thread pour les alertes
     thread_alertes = threading.Thread(target=gestion_alertes)
-    thread_alertes.daemon = True  # S'assure que ce thread s'arrête à la fin du programme principal
+    thread_alertes.daemon = True  # le thread s'arrête à la fin du programme principal
     thread_alertes.start()
 
     choix()
 
     thread_alertes.join()
-# arp spoofing
-# Injection SQL
-# XSS
+
 # Bruit de force serveur ssh
