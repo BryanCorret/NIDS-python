@@ -1,29 +1,21 @@
-from scapy.all import sniff, IP
+from scapy.all import IP, TCP, send, sniff
 import threading
 import time
 import queue
 
+# Configuration des alertes
 alert_queue = queue.Queue()
 stop_thread_dos = threading.Event()
 ip_packet_count = {}
-
 SEUIL = 10  # Seuil pour déclencher une alerte (nombre de paquets par seconde)
 
 def detect_dos(packet):
-    """Fonction pour détecter une attaque DoS en se basant sur le nombre de paquets envoyés.
-    Args:
-        packet (scapy.Packet): Le paquet réseau capturé par Scapy.
-
-    Alerte :
-        Si une IP dépasse le seuil défini de paquets par seconde, une alerte est générée et placée dans alert_queue."""
+    """Détecte une attaque DoS en se basant sur le nombre de paquets envoyés."""
     if IP in packet:
         ip_src = packet[IP].src
 
         # Met à jour le nombre de paquets envoyés par cette IP
-        if ip_src in ip_packet_count:
-            ip_packet_count[ip_src] += 1
-        else:
-            ip_packet_count[ip_src] = 1
+        ip_packet_count[ip_src] = ip_packet_count.get(ip_src, 0) + 1
 
         # Si une IP dépasse le seuil de paquets
         if ip_packet_count[ip_src] > SEUIL:
@@ -31,25 +23,25 @@ def detect_dos(packet):
             alert_queue.put(alerte)
 
 def reset_packet_count():
-    """Réinitialise le compteur de paquets toutes les secondes pour mesurer les paquets par seconde."""
+    """Réinitialise le compteur de paquets toutes les secondes."""
     while not stop_thread_dos.is_set():
-        time.sleep(1)  # Attendre 2 seconde
+        time.sleep(1)
         ip_packet_count.clear()
 
-def run_dos_detection_thread():
-    """
-    Lance le thread de détection d'attaque DoS.
+def run_dos_detection_thread(interface):
+    """Lance le thread de détection d'attaque DoS.
 
-    Ce thread capture les paquets IP et applique la détection DoS en temps réel.
+    Args:
+        interface (Str): L'interface de 
 
     Returns:
-        threading.Thread: Le thread qui effectue la détection DoS.
+        thread: Le thread de detection
     """
     stop_thread_dos.clear()
     def detection_task():
         threading.Thread(target=reset_packet_count).start()
         while not stop_thread_dos.is_set():
-            sniff(filter="ip", prn=detect_dos, timeout=1)
+            sniff(filter="ip", prn=detect_dos, timeout=1,iface=interface)
 
     thread = threading.Thread(target=detection_task)
     thread.start()

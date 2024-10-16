@@ -2,74 +2,32 @@ import os
 import threading
 import queue
 import datetime
-import ipaddress
 from Scan import run_scan_detection_thread, stop_scan_detection_thread, alert_queue as scan_alert_queue
 from Dos import run_dos_detection_thread, stop_dos_detection_thread, alert_queue as dos_alert_queue
+from utils import *
 
 
-VIOLET = '\033[95m'
-VERT = '\033[92m'
-BLEU = '\033[96m'
-WARNING = '\033[93m'
-ROUGE = '\033[91m'
-RESET = '\033[0m'
-BOLD = '\033[1m'
-
-Dic_scan = {"syn": False, "dos": False}
 scan_syn_thread = None  
 scan_dos_thread = None 
 
-def etat(type_scan, dic_scan=Dic_scan):
-    """Renvoie l'état d'un scan avec une couleur indiquant s'il est actif ou inactif
-
-    Args:
-        type_scan (string): Nom de la protection
-        dic_scan (Dict): Dictionaire contenant l'état des dictionnaires.
+def choix_interface():
+    """Permet à l'utilisateur de choisir son interface
 
     Returns:
-        Bool: True si la protection est active sinon False
+        String: Le nom de l'interface utilisateur
     """
-    if dic_scan.get(type_scan, False):
-        return f"{BOLD}{VERT}actif{RESET}"
-    else:
-        return f"{BOLD}{ROUGE}inactif{RESET}"
-
-def afficher_banniere():
-    """Affiche la bannière du tool"""
-    print(f"{BOLD}{VIOLET}**************************************************************************{RESET}")
-    print(f"{BLEU}       ____  ___  __   __     __  ___ __   __  ______")
-    print("      |    ||   ||  \  | |   |  ||   || | | | |    _ |")
-    print("      | ___||   ||    \| | __|  ||   || |_| | |  |  _|")
-    print("      |____||___||__||___||_____||___||_____| |__|\_|    ")
-    print(f"{VIOLET}**************************************************************************{RESET}")
-
-def menu():
-    """Affiche le menu des détections"""
-    print(f"\nMenu de détections : ")
-    print(f"1. Detection SYN : {etat('syn')}")
-    print(f"2. Detection Dos : {etat('dos')}")
-    print(f"3. Quitter")
-
-def adresseip():
-    """affiche le menu d'une nouvelle adresse IP
-
-    Returns:
-        String: Retourne l'ip de l'utilisateur
-    """
-    print(f"o. Si vous voulez un scan d'une adresse IP spécifique ?")
-    print(f"n. Si vous ne souhaitez pas d'adresse IP spécifique")
-    bool_ip = input(f"\n{BOLD}Voulez-vous scan une adresse ip spécifique ? option (o, n) : {RESET}")
-
-    ip = None
-    if bool_ip == 'o':
-        while True:
-            ip_input = input(f"\n{BOLD}Entrer l'adresse IP que vous souhaitez : {RESET}")
-            try:
-                ip = str(ipaddress.ip_address(ip_input))  # Valide et retourne une IP valide
+    interface,interface_input = "",""
+    
+    while interface_input == "":
+            
+            interface_input = input(f"\n{BOLD}Entrer le nom de votre interface : {RESET}")
+            if interface_input =="":
+                print(f"{ROUGE}Votre interface ne peux pas être vide.{RESET}")
+            else :
+                interface = interface_input
                 break
-            except ValueError:
-                print(f"{ROUGE}Adresse IP invalide, veuillez entrer une adresse valide.{RESET}")
-    return ip
+
+    return interface
 
 def choix():
     """Permet à l'utilisateur de choisir et activer/désactiver les détections"""
@@ -77,6 +35,7 @@ def choix():
     
     while True:
         menu()
+        print(f"L'interface est choisi est {VIOLET}{interface}{RESET} .")
         option = input(f"\n{BOLD}Choisissez une option (1-3) : {RESET}")        
 
         if option == '1':
@@ -87,9 +46,8 @@ def choix():
                 print(f"\nSYN scan est maintenant {etat('syn', Dic_scan)}")
             else:
                 Dic_scan["syn"] = True
-                """ip = adresseip()
-                print(ip)"""
-                scan_syn_thread = run_scan_detection_thread()  # Démarrer le thread de détection SYN
+                # ip = adresseip()
+                scan_syn_thread = run_scan_detection_thread(interface)  # Démarrer le thread de détection SYN
                 print(f"\nSYN scan est maintenant {etat('syn', Dic_scan)}")
         
         elif option == '2':
@@ -100,7 +58,7 @@ def choix():
                 print(f"\nDétection DoS est maintenant {etat('dos', Dic_scan)}")
             else:
                 Dic_scan["dos"] = True
-                scan_dos_thread = run_dos_detection_thread()  # Démarrer le thread de détection DoS
+                scan_dos_thread = run_dos_detection_thread(interface)  # Démarrer le thread de détection DoS
                 print(f"\nDétection DoS est maintenant {etat('dos', Dic_scan)}")          
         
         elif option == '3':
@@ -122,7 +80,7 @@ def log_alert(alert_message):
         alert_message (String): Un arlerte remonter par les Threads
     """
     log_directory = "./logs"
-    print(type(alert_message))
+    #   print(type(alert_message))
     # Vérifie si le dossier de logs existe, sinon il le crée
     if not os.path.exists(log_directory):
         os.makedirs(log_directory)
@@ -137,26 +95,27 @@ def log_alert(alert_message):
 
 def gestion_alertes():
     """Gère les alertes en temps réel."""
-    print("Gestion des alertes activéFPUe.")
     while True:
+        # Utilise une approche non-bloquante
         try:
-            alerte_scan = scan_alert_queue.get(timeout=1)  # Récupère les alertes de scan
+            alerte_scan = scan_alert_queue.get_nowait()  # Récupère les alertes de scan sans attendre
             print(f"{ROUGE}[ALERTE]{RESET} {alerte_scan}")
             log_alert(alerte_scan)
             scan_alert_queue.task_done()
         except queue.Empty:
-            pass
+            pass  # Ignore l'exception si la file est vide
 
         try:
-            alerte_dos = dos_alert_queue.get(timeout=1)  # Récupère les alertes DoS
+            alerte_dos = dos_alert_queue.get_nowait()  # Récupère les alertes DoS sans attendre
             print(f"{ROUGE}[ALERTE DOS]{RESET} {alerte_dos}")
             log_alert(alerte_dos)
             dos_alert_queue.task_done()
-
         except queue.Empty:
-            pass
+            pass  # Ignore l'exception si la file est vide
 
 if __name__ == "__main__":
+    interface = choix_interface()
+
     afficher_banniere()
 
     # Démarrer un thread pour gérer les alertes en temps réel
