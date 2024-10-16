@@ -34,3 +34,9 @@ Le but de ce projet est de développer un système de détection d'intrusion ré
 ```bash
 python -m unittest discover -s PYTHON/Test
 ```
+
+3.**Faire la doc sphynx**
+   ```bash 
+      sphinx-quickstart
+      make html
+   ```

@@ -5,4 +5,3 @@ conf module
    :members:
    :undoc-members:
    :show-inheritance:
-.. currentmodule:: scanSYN

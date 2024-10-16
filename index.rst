@@ -11,9 +11,3 @@ Sommaire :
    DOC/Scan
    DOC/Dos
 
-Indices et tables
-=================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

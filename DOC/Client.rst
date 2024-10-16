@@ -1,4 +1,4 @@
-Client Documentation
+Client Doc 
 ============================
 
 .. automodule:: Client
