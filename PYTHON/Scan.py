@@ -7,7 +7,7 @@ conf.promisc = True
 
 stop_thread = threading.Event()
 def detect_scan(packet):
-    """Fonction pour détecter les différents types de scans Nmap."""
+    """Fonction pour détecter les différents types de scans"""
     if IP in packet:
         # SYN Scan
         if TCP in packet and packet[TCP].flags == 'S':
@@ -20,6 +20,11 @@ def detect_scan(packet):
         # Xmas Scan (FIN, PSH, URG)
         elif TCP in packet and packet[TCP].flags == 'FPU':
             alert_queue.put(f"[Xmas Scan] Détecté de {packet[IP].src}")
+
+        # Reque ping
+        elif ICMP in packet:
+            if packet[ICMP].type == 8:  
+                alert_queue.put(f"[ICMP Ping Request] Détecté de {packet[IP].src}")
 
 
 
