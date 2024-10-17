@@ -6,7 +6,7 @@ import queue
 alert_queue = queue.Queue()
 stop_thread_dos = threading.Event()
 syn_cpt, ping_cpt, ip_cpt = {}, {}, {}
-SEUIL = 100  # Seuil pour activer les alertes
+SEUIL = 10  # Seuil pour activer les alertes
 DELAY = 3
 
 def detect_dos(packet):
@@ -52,7 +52,7 @@ def detect_dos(packet):
         for ip in list(ping_cpt.keys()):
             count = ping_cpt[ip]
             if count > SEUIL:
-                alerte = f"[ALERTE SYN flood] IP : {ip} avec {count} paquets SYN."
+                alerte = f"[ALERTE ICMP flood] IP : {ip} avec {count} paquets SYN."
                 alert_queue.put(alerte)
                     
 

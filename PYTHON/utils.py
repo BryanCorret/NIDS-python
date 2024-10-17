@@ -1,4 +1,4 @@
-import ipaddress
+# import ipaddress
 
 Dic_scan = {"syn": False, "dos": False, "ssh": False}
 def etat(type_scan, dic_scan=Dic_scan):
@@ -44,23 +44,23 @@ def menu():
     print(f"3. Detection Bruteforce SSh : {etat('ssh')}")
     print(f"4. Quitter")
 
-def adresseip():
-    """affiche le menu d'une nouvelle adresse IP
+# def adresseip():
+#     """affiche le menu d'une nouvelle adresse IP
 
-    Returns:
-        String: Retourne l'ip de l'utilisateur
-    """
-    print(f"o. Si vous voulez un scan d'une adresse IP spécifique ?")
-    print(f"n. Si vous ne souhaitez pas d'adresse IP spécifique")
-    bool_ip = input(f"\n{BOLD}Voulez-vous scan une adresse ip spécifique ? option (o, n) : {RESET}")
+#     Returns:
+#         String: Retourne l'ip de l'utilisateur
+#     """
+#     print(f"o. Si vous voulez un scan d'une adresse IP spécifique ?")
+#     print(f"n. Si vous ne souhaitez pas d'adresse IP spécifique")
+#     bool_ip = input(f"\n{BOLD}Voulez-vous scan une adresse ip spécifique ? option (o, n) : {RESET}")
 
-    ip = None
-    if bool_ip == 'o':
-        while True:
-            ip_input = input(f"\n{BOLD}Entrer l'adresse IP que vous souhaitez : {RESET}")
-            try:
-                ip = str(ipaddress.ip_address(ip_input))  # Valide et retourne une IP valide
-                break
-            except ValueError:
-                print(f"{ROUGE}Adresse IP invalide, veuillez entrer une adresse valide.{RESET}")
-    return ip
+#     ip = None
+#     if bool_ip == 'o':
+#         while True:
+#             ip_input = input(f"\n{BOLD}Entrer l'adresse IP que vous souhaitez : {RESET}")
+#             try:
+#                 ip = str(ipaddress.ip_address(ip_input))  # Valide et retourne une IP valide
+#                 break
+#             except ValueError:
+#                 print(f"{ROUGE}Adresse IP invalide, veuillez entrer une adresse valide.{RESET}")
+#     return ip

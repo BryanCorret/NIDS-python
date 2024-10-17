@@ -23,7 +23,7 @@ def detect_ssh_bruteforce(packet):
         if count > SSH_SEUIL:
             alerte = f"[ALERTE Brute-force SSH] IP : {ip} avec {count} tentatives sur le port 22."
             alert_queue.put(alerte)
-            print(alerte)
+            # print(alerte)
 
 def reset_ssh():
     """Réinitialise les compteurs SSH toutes les DELAY secondes"""

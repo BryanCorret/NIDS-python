@@ -24,7 +24,7 @@ def detect_scan(packet):
         # Reque ping
         elif ICMP in packet:
             if packet[ICMP].type == 8:  
-                alert_queue.put(f"[ICMP Ping Request] Détecté de {packet[IP].src}")
+                alert_queue.put(f"[ICMP Ping Requête] Détecté de {packet[IP].src}")
 
 
 

@@ -1,6 +1,6 @@
-======================
+=======================
 Module de détection DoS
-======================
+=======================
 
 Ce module est utilisé pour détecter les attaques de type Déni de Service (DoS) en analysant le trafic réseau et en comptant le nombre de paquets envoyés par chaque adresse IP source. Si une IP dépasse un seuil prédéfini de paquets par seconde, une alerte est générée.
 
@@ -8,9 +8,6 @@ Fonctions
 =========
 
 .. automodule:: Dos
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 Explication des fonctions
 =========================
@@ -25,7 +22,7 @@ Cette fonction est responsable de la détection des attaques DoS en comptant les
 reset_packet_count
 ------------------
 
-.. autofunction:: reset_packet_count
+.. autofunction:: reset
 
 Cette fonction réinitialise le compteur de paquets pour chaque IP toutes les secondes, permettant de mesurer le nombre de paquets par IP par seconde.
 
