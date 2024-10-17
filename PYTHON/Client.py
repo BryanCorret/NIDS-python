@@ -114,11 +114,6 @@ def gestion_alertes():
             log_alert(alerte_scan)
             scan_alert_queue.task_done()
 
-            alerte_dos = dos_alert_queue.get_nowait() 
-            print(f"{ROUGE}[ALERTE DOS]{RESET} {alerte_dos}")
-            log_alert(alerte_dos)
-            dos_alert_queue.task_done()
-
         except queue.Empty: # si vide passer l'erreur
             pass 
 
