@@ -36,7 +36,7 @@ def choix():
     while True:
         menu()
         print(f"L'interface est choisi est {VIOLET}{interface}{RESET} .")
-        option = input(f"\n{BOLD}Choisissez une option (1-3) : {RESET}")        
+        option = input(f"\n{BOLD}Choisissez une option (1-4) : {RESET}")        
 
         if option == '1':
             if Dic_scan["syn"]:
